@@ -1,10 +1,22 @@
 #ifndef __APP_MOTION_H
 #define __APP_MOTION_H
 #include <stdint.h>
-#include "kxtj3-1057.h"
+#include "board_def.h"
+
 #include "Wire.h"
 
+
+#if HW_ACC == ACC_KXTJ3_1057
+#include "kxtj3-1057.h"
 extern KXTJ3 myIMU;
+#elif HW_ACC == ACC_QMA7981
+#include "qma7981.h"
+extern QMA7981 myIMU;
+#elif HW_ACC ==ACC_LSM6DS3TR
+#include <Adafruit_LSM6DS3.h> 
+#endif
+
+
 
 #define AXIS_THRESHOLD 0.6
 

@@ -1,4 +1,4 @@
-#include "update.h"
+#include "whackamole.h"
 #include "board_def.h"
 #include "app/app_key.h"
 #include "time.h"
@@ -64,13 +64,13 @@ static void exit(void *data)
 	manager_setBusy(true);
 }
 #include "img.h"
-page_t page_update = {
+page_t page_whackamole = {
 	.init = init,
 	.enter = enter,
 	.exit = exit,
 	.loop = loop,
-	.title_en = "Update",
-	.title_cn = "升级固件",
+	.title_en = "Whackamole",
+	.title_cn = "打地鼠",
 	.icon = img_bits,
 	.icon_width = img_width,
 	.icon_height = img_height,

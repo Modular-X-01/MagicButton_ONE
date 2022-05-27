@@ -141,11 +141,22 @@
 #include "app_motion.h"
 
 static bool f_init = false;
+
+#if HW_ACC == ACC_KXTJ3_1057
+#include "kxtj3-1057.h"
 KXTJ3 myIMU(0x0E); // Address can be 0x0E or 0x0F
+#elif HW_ACC == ACC_QMA7981
+#include "qma7981.h"
+QMA7981 myIMU;
+#elif HW_ACC == ACC_LSM6DS3TR
+#include <Adafruit_LSM6DS3.h>
+#endif
+
+#if HW_ACC == ACC_KXTJ3_1057
 bool app_motion_init(float sampleRate, uint8_t accelRange)
 {
     if (f_init == false)
-    { //acc
+    { // acc
         // float sampleRate = 50; // HZ - Samples per second - 0.781, 1.563, 3.125, 6.25, 12.5, 25, 50, 100, 200, 400, 800, 1600Hz
         // uint8_t accelRange = 2;  // Accelerometer range = 2, 4, 8, 16g
         if (myIMU.begin(sampleRate, accelRange) != 0)
@@ -170,24 +181,22 @@ void app_motion_get(motion_t *data)
     data->z = myIMU.axisAccel(Z);
 }
 
-
 void app_motion_get_raw(motion_t *data)
 {
     int16_t outRAW;
-	uint8_t regToRead = 0;	 
+    uint8_t regToRead = 0;
 
-    regToRead = KXTJ3_OUT_X_L;	 
-	myIMU.readRegisterInt16( &outRAW, regToRead);
+    regToRead = KXTJ3_OUT_X_L;
+    myIMU.readRegisterInt16(&outRAW, regToRead);
     data->raw_x = outRAW;
 
-    regToRead = KXTJ3_OUT_Y_L;	 
-	myIMU.readRegisterInt16( &outRAW, regToRead);
+    regToRead = KXTJ3_OUT_Y_L;
+    myIMU.readRegisterInt16(&outRAW, regToRead);
     data->raw_y = outRAW;
 
-    regToRead = KXTJ3_OUT_Z_L;	 
-	myIMU.readRegisterInt16( &outRAW, regToRead);
+    regToRead = KXTJ3_OUT_Z_L;
+    myIMU.readRegisterInt16(&outRAW, regToRead);
     data->raw_z = outRAW;
-
 }
 
 void app_motion_deinit()
@@ -196,11 +205,10 @@ void app_motion_deinit()
     {
         myIMU.standby(true);
         Wire.end();
-        f_init =false;
+        f_init = false;
     }
 }
 
- 
 void app_motion_sleep()
 {
     myIMU.standby(true);
@@ -210,33 +218,89 @@ void app_motion_wakeup()
     myIMU.standby(false);
 }
 
-
-  uint8_t app_getDirection()
+#elif HW_ACC == ACC_QMA7981
+bool app_motion_init(float sampleRate, uint8_t accelRange)
 {
-	motion_t data;
-	uint8_t dir=0;
-	app_motion_get(&data);
-	if(data.x >AXIS_THRESHOLD)
-	{
-		dir = DIR_RIGHT;
-	}
-	else if(data.x <(0-AXIS_THRESHOLD))
-	{
-		dir = DIR_LEFT;
-	}
+    if (f_init == false)
+    {                                         // acc
+        myIMU.initialize_default();           // setup acceleromter with default settings
+        myIMU.set_full_scale_range(RANGE_2G); // set maximum range (+- 2G)
+        myIMU.set_bandwidth(MCLK_DIV_BY_975); // set bandwidth (samples per sec)
+                                              // = CLK / DIV_BY = 50k / 975 = 50 samples / sec
+    }
+    return true;
+}
 
-	if(data.y >AXIS_THRESHOLD)
-	{
-		dir |= DIR_DOWN;
-	}
-	else if(data.y <(0-AXIS_THRESHOLD))
-	{
-		dir |= DIR_UP;
-	}
+void app_motion_get(motion_t *data)
+{
 
-	return dir;
+    data->x = myIMU.get_accel_x();
+    data->y = myIMU.get_accel_y();
+    data->z = myIMU.get_accel_z();
+}
+
+void app_motion_get_raw(motion_t *data)
+{
 
 
 
+    data->raw_x = myIMU.get_accel_x();
 
+
+    data->raw_y = myIMU.get_accel_y();
+
+   
+    data->raw_z = myIMU.get_accel_z();
+}
+
+void app_motion_deinit()
+{
+    if (f_init)
+    {
+        myIMU.set_mode(MODE_STANDBY);
+        Wire.end();
+        f_init = false;
+    }
+}
+
+void app_motion_sleep()
+{
+    myIMU.set_mode(MODE_STANDBY);
+}
+void app_motion_wakeup()
+{
+    myIMU.set_mode(MODE_ACTIVE);
+}
+#elif HW_ACC == ACC_LSM6DS3TR
+
+#endif
+
+
+
+
+
+uint8_t app_getDirection()
+{
+    motion_t data;
+    uint8_t dir = 0;
+    app_motion_get(&data);
+    if (data.x > AXIS_THRESHOLD)
+    {
+        dir = DIR_RIGHT;
+    }
+    else if (data.x < (0 - AXIS_THRESHOLD))
+    {
+        dir = DIR_LEFT;
+    }
+
+    if (data.y > AXIS_THRESHOLD)
+    {
+        dir |= DIR_DOWN;
+    }
+    else if (data.y < (0 - AXIS_THRESHOLD))
+    {
+        dir |= DIR_UP;
+    }
+
+    return dir;
 }

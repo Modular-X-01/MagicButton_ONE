@@ -88,7 +88,7 @@ static const uint8_t A7  = PIN_A7 ;
 
 // Other pins
 #define PIN_AREF           PIN_A7
-#define PIN_VBAT           PIN_A2
+#define PIN_VBAT           (14)
 #define PIN_NFC1           (33)
 #define PIN_NFC2           (2)
 
@@ -119,8 +119,8 @@ static const uint8_t SCK  = PIN_SPI_SCK ;
  */
 #define WIRE_INTERFACES_COUNT 1
 
-#define PIN_WIRE_SDA         (44)
-#define PIN_WIRE_SCL         (4)
+#define PIN_WIRE_SDA         (4)
+#define PIN_WIRE_SCL         (3)
 
 // QSPI Pins
 // #define PIN_QSPI_SCK         1//0.24

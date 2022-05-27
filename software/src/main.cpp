@@ -202,7 +202,7 @@ void setup()
  
 
         u8g2.begin();
-        u8g2.setContrast(100);
+        u8g2.setContrast(1000);
 
         //LOGO begin
         for (uint8_t i = 1; i <= 24; i++)
@@ -223,7 +223,8 @@ void setup()
                 u8g2.drawXBMP((OLED_WIDTH - upgrade_width) / 2, (OLED_HEIGHT - upgrade_height) / 2, upgrade_width, upgrade_height, upgrade_bits);
                 u8g2.sendBuffer();
                 delay(3000);
-                enterUf2Dfu();
+                // enterUf2Dfu();
+                enterOTADfu();
         }
 
         delay(1000);
@@ -253,7 +254,7 @@ void setup()
         u8g2log.println();
         delay(100);
 
-        //acc
+        // acc
         if (app_motion_init(6.25, 2) == false)
         {
                 u8g2log.print("Failed to initialize IMU.\n");
@@ -281,10 +282,10 @@ void setup()
                 app_env_get(&data);
                 u8g2log.print("Temperature: ");
                 u8g2log.print(data.temperature);
-                u8g2log.println(" degrees C");
+                u8g2log.println(" degrees C");delay(100);
                 u8g2log.print("Humidity: ");
                 u8g2log.print(data.humidity);
-                u8g2log.println("% rH");
+                u8g2log.println("% rH");delay(100);
 
                 app_env_deinit();
         }
@@ -295,17 +296,18 @@ void setup()
         if (res == pdPASS)
         {
         }
-
+        u8g2log.println("set time ");
         set_time(2021, 9, 10, 14, 31, 0);
         app_time_init();
  
-
+        u8g2log.println("manager_init ");
         manager_init();
-
+        u8g2log.println("manager_init done");
         app_timeout_init(timeout_timer_callback);
         app_motor_init();
         app_key_init();
 
+        u8g2log.println("done ");
  
 
         // enterOTADfu();

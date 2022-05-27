@@ -44,7 +44,7 @@ page_t *pages[] = {
     &page_neoled,
     &page_bili,
     &page_bird,
-    // &page_update,
+    &page_update,
 
 };
 

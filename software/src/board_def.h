@@ -3,7 +3,7 @@
 
 
 #define VER_HW  "1.1"
-#define VER_SW  "1.1"
+#define VER_SW  "1.2"
 
 
 #define MCU_NRF52840 0
@@ -25,7 +25,7 @@
 
 #define HW_MCU  MCU_NRF52840
 #define HW_OLED OLED_SSD1306  
-#define HW_ACC  ACC_KXTJ3_1057
+#define HW_ACC  ACC_QMA7981
 // #define HW_ENV  ENV_AHT2X
 
 #include <U8g2lib.h>
